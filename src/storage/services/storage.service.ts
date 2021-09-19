@@ -14,7 +14,7 @@ export class StorageService implements IStorageService {
       Key: `${key}`,
       Body: file.buffer,
       ACL: 'public-read',
-      ContentType: 'image/jpg',
+      ContentType: file.mimetype,
     });
   }
 
