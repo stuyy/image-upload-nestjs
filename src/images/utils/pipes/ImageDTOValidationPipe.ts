@@ -1,6 +1,7 @@
 import { ArgumentMetadata, HttpStatus, PipeTransform } from '@nestjs/common';
 import { ImageOptionsDto } from '../dto/ImageOptionsDto';
 import { HttpException } from '@nestjs/common';
+
 export class ImageDTOValidationPipe implements PipeTransform {
   transform(value: any, metadata: ArgumentMetadata) {
     if (metadata.type === 'body') {

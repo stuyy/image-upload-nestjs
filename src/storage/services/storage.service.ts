@@ -1,4 +1,8 @@
-import { PutObjectCommandOutput, S3 } from '@aws-sdk/client-s3';
+import {
+  GetObjectCommandOutput,
+  PutObjectCommandOutput,
+  S3,
+} from '@aws-sdk/client-s3';
 import { Inject } from '@nestjs/common';
 import {
   ImageOptionsType,
@@ -24,10 +28,12 @@ export class StorageService implements IStorageService {
     });
   }
 
-  getImage(key: string) {
+  getImage(key: string): Promise<GetObjectCommandOutput> {
     return this.s3Client.getObject({
       Bucket: SPACES_BUCKET_NAME,
       Key: key,
     });
   }
+
+  getPrivateImage() {}
 }

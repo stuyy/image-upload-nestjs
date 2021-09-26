@@ -1,4 +1,4 @@
-import { PutObjectCommandOutput } from '@aws-sdk/client-s3';
+import { GetObjectCommandOutput } from '@aws-sdk/client-s3';
 import { Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -18,15 +18,36 @@ export class ImageService implements ImageServiceInterface {
     key: string,
     file: Express.Multer.File,
     imageOptions: ImageOptionsType,
-  ): Promise<PutObjectCommandOutput> {
+  ): Promise<ImageReference> {
     const uploaded = await this.storageService.upload(key, file, imageOptions);
     console.log(uploaded);
-    return uploaded;
+    const newImageRef = this.imageReferenceRepository.create({
+      imageId: key,
+      etag: uploaded.ETag,
+      ...imageOptions,
+    });
+    return this.imageReferenceRepository.save(newImageRef);
   }
-  delete() {
-    throw new Error('Method not implemented.');
+
+  async getImage(imageId: string): Promise<GetObjectCommandOutput> {
+    return this.storageService.getImage(imageId);
   }
-  read(key: string) {
-    return this.storageService.getImage(key);
+
+  async getImagePermission(imageId: string): Promise<boolean> {
+    const imageRef = await this.imageReferenceRepository.findOne({ imageId });
+    if (!imageRef) throw new Error('No Image Found');
+    return imageRef.isProtected;
+  }
+
+  async getImageReference(imageId: string) {
+    const imageRef = await this.imageReferenceRepository.findOne({ imageId });
+    if (!imageRef) throw new Error('No Image Found');
+    return imageRef;
+  }
+
+  async validatePassword(imageId: string, password: string): Promise<boolean> {
+    const imageRef = await this.imageReferenceRepository.findOne({ imageId });
+    if (!imageRef) throw new Error('No Image Found');
+    return imageRef.password === password;
   }
 }
