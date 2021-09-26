@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Inject,
@@ -7,12 +8,16 @@ import {
   Res,
   UploadedFile,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { Services, SPACES_URL } from '../../../utils/types';
 import { ImageServiceInterface } from '../../services/images/image';
 import { v4 as uuidv4 } from 'uuid';
+import { ImageDto } from '../../utils/dto/ImageDto';
+import { ImageDTOValidationPipe } from '../../utils/pipes/ImageDTOValidationPipe';
 
 @Controller('image')
 export class ImageController {
@@ -23,10 +28,13 @@ export class ImageController {
 
   @Post('create')
   @UseInterceptors(FileInterceptor('file'))
+  @UsePipes(new ValidationPipe({ transform: true }), ImageDTOValidationPipe)
   async createImage(
     @UploadedFile() file: Express.Multer.File,
+    @Body() imageDto: ImageDto,
     @Res() res: Response,
   ) {
+    console.log(imageDto);
     try {
       const key = uuidv4().split('-')[0];
       await this.imageService.upload(key, file);
