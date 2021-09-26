@@ -16,7 +16,7 @@ import { Response } from 'express';
 import { Services, SPACES_URL } from '../../../utils/types';
 import { ImageServiceInterface } from '../../services/images/image';
 import { v4 as uuidv4 } from 'uuid';
-import { ImageDto } from '../../utils/dto/ImageDto';
+import { ImageOptionsDto } from '../../utils/dto/ImageOptionsDto';
 import { ImageDTOValidationPipe } from '../../utils/pipes/ImageDTOValidationPipe';
 
 @Controller('image')
@@ -31,13 +31,13 @@ export class ImageController {
   @UsePipes(new ValidationPipe({ transform: true }), ImageDTOValidationPipe)
   async createImage(
     @UploadedFile() file: Express.Multer.File,
-    @Body() imageDto: ImageDto,
+    @Body() imageOptions: ImageOptionsDto,
     @Res() res: Response,
   ) {
-    console.log(imageDto);
+    console.log(imageOptions);
     try {
       const key = uuidv4().split('-')[0];
-      await this.imageService.upload(key, file);
+      const upload = await this.imageService.upload(key, file, imageOptions);
       res.status(201).send(key);
     } catch (err) {
       console.log(err);

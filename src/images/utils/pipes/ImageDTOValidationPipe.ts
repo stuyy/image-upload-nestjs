@@ -1,10 +1,10 @@
 import { ArgumentMetadata, HttpStatus, PipeTransform } from '@nestjs/common';
-import { ImageDto } from '../dto/ImageDto';
+import { ImageOptionsDto } from '../dto/ImageOptionsDto';
 import { HttpException } from '@nestjs/common';
 export class ImageDTOValidationPipe implements PipeTransform {
   transform(value: any, metadata: ArgumentMetadata) {
     if (metadata.type === 'body') {
-      const imageDto = value as ImageDto;
+      const imageDto = value as ImageOptionsDto;
       if (imageDto.isProtected && !imageDto.password)
         throw new HttpException(
           'Password is required for a protected image',

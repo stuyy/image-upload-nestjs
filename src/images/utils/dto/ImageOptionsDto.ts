@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
 
-export class ImageDto {
+export class ImageOptionsDto {
   @IsNotEmpty()
   @Transform(({ value }) => JSON.parse(value))
   isNSFW: boolean;
